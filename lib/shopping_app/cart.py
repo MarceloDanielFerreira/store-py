@@ -1,3 +1,4 @@
+from ownable import set_owner
 class Cart:
     from item_manager import show_items
 
@@ -16,16 +17,31 @@ class Cart:
         for item in self.items:
             price_list.append(item.price)
         return sum(price_list)
-
+    def set_owner(self, owner):
+        self.owner = owner
     def check_out(self):
         if self.owner.wallet.balance < self.total_amount():
-            pass    # check_outメソッドをコーディングする際はpassは削除してください。
-        # 要件
-        #   - カートの中身（Cart#items）のすべてのアイテムの購入金額が、カートのオーナーのウォレットからアイテムのオーナーのウォレットに移されること。
-        #   - カートの中身（Cart#items）のすべてのアイテムのオーナー権限が、カートのオーナーに移されること。
-        #   - カートの中身（Cart#items）が空になること。
-        # ヒント
-        #   - カートのオーナーのウォレット ==> self.owner.wallet
-        #   - アイテムのオーナーのウォレット ==> item.owner.wallet
-        #   - お金が移されるということ ==> (？)のウォレットからその分を引き出して、(？)のウォレットにその分を入金するということ
-        #   - アイテムのオーナー権限がカートのオーナーに移されること ==> オーナーの書き換え（item.owner = ?）
+            raise ValueError("Saldo insuficiente en la billetera del propietario para el pago.")
+
+        for item in self.items:
+            # Transferir el precio del artículo desde la billetera del propietario del carrito a la billetera del propietario del artículo.
+            self.owner.wallet.balance -= item.price
+            item.owner.wallet.balance += item.price
+
+            # Transferir la propiedad del artículo al propietario del carrito.
+            item.owner = self.owner
+
+        # Vaciar el carrito al borrar la lista de artículos.
+        self.items = []
+            
+
+        # Al codificar el método check_out, se debe eliminar PASS.
+        # Requisito.
+        # - el precio de compra de todos los artículos del contenido del carrito (Cart#items) se transfiere del monedero del propietario del carrito al monedero del propietario del artículo.
+        # - Los derechos de propiedad de todos los artículos del contenido del carrito (Cart#items) se transferirán al propietario del carrito.
+        # - El contenido del carrito (Cart#items) debe estar vacío.
+        # Consejo.
+        # - Cartera del propietario del carrito ==> self.owner.wallet
+        # - Cartera del propietario del artículo ==> item.owner.wallet
+        # - Que el dinero sea transferido ==> (?) retirando esa cantidad del monedero del (?).), lo que significa depositar esa cantidad en el monedero del
+        # - Los derechos de propietario del artículo se transfieren al propietario del carrito ==> Reescritura de propietario (item.owner = ?)
